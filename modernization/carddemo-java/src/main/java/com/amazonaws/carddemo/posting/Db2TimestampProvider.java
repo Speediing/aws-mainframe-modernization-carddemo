@@ -9,8 +9,8 @@ import java.time.format.DateTimeFormatter;
  */
 public final class Db2TimestampProvider {
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS");
+    private static final DateTimeFormatter BASE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss");
 
     private final Clock clock;
 
@@ -19,6 +19,8 @@ public final class Db2TimestampProvider {
     }
 
     public String now() {
-        return LocalDateTime.now(clock).format(FORMATTER);
+        LocalDateTime dateTime = LocalDateTime.now(clock);
+        int millis = dateTime.getNano() / 1_000_000;
+        return dateTime.format(BASE_FORMATTER) + "." + String.format("%03d000", millis);
     }
 }

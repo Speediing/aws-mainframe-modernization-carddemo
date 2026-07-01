@@ -28,18 +28,20 @@ public final class TransactionValidator {
             return new ValidationResult(101, "ACCOUNT RECORD NOT FOUND");
         }
 
+        ValidationResult result = ValidationResult.OK;
+
         BigDecimal tempBal = account.currCycCredit()
                 .subtract(account.currCycDebit())
                 .add(transaction.amount());
 
         if (account.creditLimit().compareTo(tempBal) < 0) {
-            return new ValidationResult(102, "OVERLIMIT TRANSACTION");
+            result = new ValidationResult(102, "OVERLIMIT TRANSACTION");
         }
 
         if (account.expirationDate().compareTo(transaction.transactionDate()) < 0) {
-            return new ValidationResult(103, "TRANSACTION RECEIVED AFTER ACCT EXPIRATION");
+            result = new ValidationResult(103, "TRANSACTION RECEIVED AFTER ACCT EXPIRATION");
         }
 
-        return ValidationResult.OK;
+        return result;
     }
 }

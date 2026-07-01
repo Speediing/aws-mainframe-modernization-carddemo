@@ -7,6 +7,7 @@ public record RejectedTransaction(
         int reasonCode,
         String reasonDescription,
         String cardNum,
-        BigDecimal amount
+        BigDecimal amount,
+        String rawRecord
 ) {
 }

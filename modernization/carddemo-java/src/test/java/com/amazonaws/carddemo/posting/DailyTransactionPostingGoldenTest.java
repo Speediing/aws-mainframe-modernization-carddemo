@@ -1,9 +1,12 @@
 package com.amazonaws.carddemo.posting;
 
 import com.amazonaws.carddemo.posting.model.AccountRecord;
+import com.amazonaws.carddemo.posting.model.CardXrefRecord;
+import com.amazonaws.carddemo.posting.model.DailyTransaction;
 import com.amazonaws.carddemo.posting.model.PostedTransaction;
 import com.amazonaws.carddemo.posting.model.RejectedTransaction;
 import com.amazonaws.carddemo.posting.model.TranCatBalanceRecord;
+import com.amazonaws.carddemo.posting.model.ValidationResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,15 +71,39 @@ class DailyTransactionPostingGoldenTest {
 
         assertEquals(101, new TransactionValidator().validate(
                 transaction("00000000002", "1111111111111111", "100.00"),
-                Map.of("1111111111111111", new com.amazonaws.carddemo.posting.model.CardXrefRecord(
+                Map.of("1111111111111111", new CardXrefRecord(
                         "1111111111111111", "000000001", "00000000999")),
                 Map.of()
         ).reasonCode());
     }
 
-    private static com.amazonaws.carddemo.posting.model.DailyTransaction transaction(
+    @Test
+    void overlimitAndExpiredTransactionReportsReason103() {
+        AccountRecord account = new AccountRecord(
+                "00000000099", "Y",
+                new BigDecimal("100.00"), new BigDecimal("50.00"), new BigDecimal("50.00"),
+                "2012-10-12", "2020-01-01", "2020-01-01",
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                "A000000000", "A000000000"
+        );
+        CardXrefRecord xref = new CardXrefRecord(
+                "3333333333333333", "00000000099", "00000000099"
+        );
+        DailyTransaction tx = transaction("00000000099", "3333333333333333", "100.00");
+
+        ValidationResult result = new TransactionValidator().validate(
+                tx,
+                Map.of(xref.cardNum(), xref),
+                Map.of(account.acctId(), account)
+        );
+
+        assertEquals(103, result.reasonCode());
+        assertEquals("TRANSACTION RECEIVED AFTER ACCT EXPIRATION", result.reasonDescription());
+    }
+
+    private static DailyTransaction transaction(
             String id, String cardNum, String amount) {
-        return new com.amazonaws.carddemo.posting.model.DailyTransaction(
+        return new DailyTransaction(
                 id, "01", "0001", "POS TERM  ", "test",
                 new BigDecimal(amount), "800000000", "Merchant", "City", "12345",
                 cardNum, "2022-06-10 19:27:53.000000", " ".repeat(26), " ".repeat(350)
@@ -106,6 +133,7 @@ class DailyTransactionPostingGoldenTest {
             assertEquals(exp.get("reasonDescription").asText(), act.reasonDescription());
             assertEquals(exp.get("cardNum").asText(), act.cardNum());
             assertEquals(0, exp.get("amount").decimalValue().compareTo(act.amount()));
+            assertEquals(350, act.rawRecord().length(), "DALYREJS reject must carry 350-byte raw record");
         }
     }
 

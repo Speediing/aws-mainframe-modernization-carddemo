@@ -47,7 +47,8 @@ public final class DailyTransactionPostingService {
                         validation.reasonCode(),
                         validation.reasonDescription(),
                         transaction.cardNum(),
-                        transaction.amount()
+                        transaction.amount(),
+                        transaction.rawRecord()
                 ));
                 continue;
             }
@@ -64,7 +65,8 @@ public final class DailyTransactionPostingService {
                         109,
                         "ACCOUNT RECORD NOT FOUND",
                         transaction.cardNum(),
-                        transaction.amount()
+                        transaction.amount(),
+                        transaction.rawRecord()
                 ));
                 continue;
             }
