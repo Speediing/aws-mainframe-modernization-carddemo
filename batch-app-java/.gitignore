@@ -1,0 +1,10 @@
+batch-app-java/target/
+batch-app-java/**/target/
+*.class
+*.jar
+*.war
+.idea/
+*.iml
+.project
+.classpath
+.settings/
