@@ -1,0 +1,24 @@
+# Version control and CI
+.git
+.gitignore
+.github
+
+# Editor and OS artifacts
+.vscode
+.idea
+**/.DS_Store
+*.swp
+*.swo
+*~
+
+# Local-only paths excluded from the repo
+sample/
+mock-data-generator/
+
+# Build and test artifacts
+*.tmp
+test.txt
+*.log
+
+# Container build context (entrypoint is copied explicitly in Dockerfile)
+# docker/
