@@ -1,0 +1,70 @@
+{
+  "processedCount": 5,
+  "rejectCount": 4,
+  "returnCode": 4,
+  "posted": [
+    {
+      "transactionId": "0000000000683580",
+      "cardNum": "4859452612877065",
+      "acctId": "00000000007",
+      "amount": 504.77,
+      "procTs": "2026-07-01-12.00.00.000000"
+    }
+  ],
+  "rejects": [
+    {
+      "transactionId": "0000000040455859",
+      "reasonCode": 102,
+      "reasonDescription": "OVERLIMIT TRANSACTION",
+      "cardNum": "1142167692878931",
+      "amount": 715.44
+    },
+    {
+      "transactionId": "0000000000683580",
+      "reasonCode": 100,
+      "reasonDescription": "INVALID CARD NUMBER FOUND",
+      "cardNum": "9999999999999999",
+      "amount": 504.77
+    },
+    {
+      "transactionId": "0000000000683580",
+      "reasonCode": 101,
+      "reasonDescription": "ACCOUNT RECORD NOT FOUND",
+      "cardNum": "1111111111111111",
+      "amount": 504.77
+    },
+    {
+      "transactionId": "0000000000683580",
+      "reasonCode": 103,
+      "reasonDescription": "TRANSACTION RECEIVED AFTER ACCT EXPIRATION",
+      "cardNum": "2222222222222222",
+      "amount": 504.77
+    }
+  ],
+  "accounts": {
+    "00000000007": {
+      "acctId": "00000000007",
+      "currBal": 697.77,
+      "creditLimit": 2065.0,
+      "expirationDate": "2024-12-13",
+      "currCycCredit": 504.77,
+      "currCycDebit": 0.0
+    },
+    "00000000037": {
+      "acctId": "00000000037",
+      "currBal": 7.0,
+      "creditLimit": 446.0,
+      "expirationDate": "2023-10-24",
+      "currCycCredit": 0.0,
+      "currCycDebit": 0.0
+    }
+  },
+  "tcatBalances": [
+    {
+      "acctId": "00000000007",
+      "typeCd": "01",
+      "catCd": "0001",
+      "balance": 504.77
+    }
+  ]
+}
