@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "plan-waves": "tsx scripts/plan-waves.ts"
+    "plan-waves": "tsx scripts/plan-waves.ts",
+    "validate-inventory": "tsx scripts/validate-inventory.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

@@ -1,6 +1,6 @@
 # CardDemo Modernization Wave Plan
 
-Generated: 2026-07-01T02:58:30.374Z
+Generated: 2026-07-01T04:30:04.184Z
 
 ## Executive Summary
 
@@ -56,7 +56,7 @@ Wave 6  IMS/DB2/MQ authorization extension
 
 **Prerequisites:** None
 **Risk:** low
-**Scope:** 0 programs (0 lines), 0 JCL jobs
+**Scope:** 0 programs (0 lines), 15 JCL jobs
 **Technologies:** assembler, bms, cics, copybook, jcl, shell
 
 | Item | Type | Lines | Pilot | Notes |
@@ -67,6 +67,21 @@ Wave 6  IMS/DB2/MQ authorization extension
 | CICS CSD definitions | module | — | yes | foundation module; outbound deps: none |
 | Build samples | module | — | yes | tooling module; outbound deps: none |
 | Dev tooling scripts | module | — | yes | tooling module; outbound deps: none |
+| ACCTFILE | jcl | — | yes | utility job |
+| CARDFILE | jcl | — | no | PGM=SDSF |
+| CUSTFILE | jcl | — | no | PGM=SDSF |
+| DEFCUST | jcl | — | yes | utility job |
+| DEFGDGB | jcl | — | yes | utility job |
+| DEFGDGD | jcl | — | yes | utility job |
+| DISCGRP | jcl | — | yes | utility job |
+| DUSRSECJ | jcl | — | yes | utility job |
+| ESDSRRDS | jcl | — | yes | utility job |
+| REPTFILE | jcl | — | yes | utility job |
+| TCATBALF | jcl | — | yes | utility job |
+| TRANCATG | jcl | — | yes | utility job |
+| TRANFILE | jcl | — | no | PGM=SDSF |
+| TRANTYPE | jcl | — | yes | utility job |
+| XREFFILE | jcl | — | yes | utility job |
 | High fan-in copybooks | copybook-group | — | yes | COCOM01Y (19), COTTL01Y (19), CSDAT01Y (19), CSMSG01Y (19), CVACT01Y (14), CVACT03Y (14), CSUSR01Y (12), CVTRA05Y (11), CVCUS01Y (10), CVACT02Y (9) |
 
 ## Wave 2: Pilot — isolated MQ services and simple batch readers
@@ -102,7 +117,7 @@ Wave 6  IMS/DB2/MQ authorization extension
 
 **Prerequisites:** Wave 1, Wave 2
 **Risk:** medium
-**Scope:** 7 programs (3,832 lines), 33 JCL jobs
+**Scope:** 7 programs (3,832 lines), 18 JCL jobs
 **Technologies:** cobol, jcl
 
 | Item | Type | Lines | Pilot | Notes |
@@ -116,22 +131,13 @@ Wave 6  IMS/DB2/MQ authorization extension
 | CBTRN03C | program | 650 | no | batch; low complexity; jobs: TRANREPT |
 | CBACT04C | program | 653 | no | batch; low complexity; jobs: INTCALC |
 | CBTRN02C | program | 732 | no | batch; low complexity; jobs: POSTTRAN |
-| ACCTFILE | jcl | — | yes | utility job |
-| CARDFILE | jcl | — | no | PGM=SDSF |
 | CBADMCDJ | jcl | — | yes | utility job |
 | CBEXPORT | jcl | — | no | PGM=CBEXPORT |
 | CBIMPORT | jcl | — | no | PGM=CBIMPORT |
 | CLOSEFIL | jcl | — | no | PGM=SDSF |
 | COMBTRAN | jcl | — | yes | utility job |
 | CREASTMT | jcl | — | no | PGM=CBSTM03A |
-| CUSTFILE | jcl | — | no | PGM=SDSF |
 | DALYREJS | jcl | — | yes | utility job |
-| DEFCUST | jcl | — | yes | utility job |
-| DEFGDGB | jcl | — | yes | utility job |
-| DEFGDGD | jcl | — | yes | utility job |
-| DISCGRP | jcl | — | yes | utility job |
-| DUSRSECJ | jcl | — | yes | utility job |
-| ESDSRRDS | jcl | — | yes | utility job |
 | FTPJCL | jcl | — | no | PGM=FTP |
 | INTCALC | jcl | — | no | PGM=CBACT04C |
 | INTRDRJ1 | jcl | — | yes | utility job |
@@ -139,16 +145,10 @@ Wave 6  IMS/DB2/MQ authorization extension
 | OPENFIL | jcl | — | no | PGM=SDSF |
 | POSTTRAN | jcl | — | no | PGM=CBTRN02C |
 | PRTCATBL | jcl | — | yes | utility job |
-| REPTFILE | jcl | — | yes | utility job |
-| TCATBALF | jcl | — | yes | utility job |
 | TRANBKP | jcl | — | yes | utility job |
-| TRANCATG | jcl | — | yes | utility job |
-| TRANFILE | jcl | — | no | PGM=SDSF |
 | TRANIDX | jcl | — | yes | utility job |
 | TRANREPT | jcl | — | no | PGM=CBTRN03C |
-| TRANTYPE | jcl | — | yes | utility job |
 | TXT2PDF1 | jcl | — | no | PGM=IKJEFT1B |
-| XREFFILE | jcl | — | yes | utility job |
 
 ## Wave 4: Core online — CICS transactions and screens
 
@@ -210,7 +210,7 @@ Wave 6  IMS/DB2/MQ authorization extension
 | Item | Type | Lines | Pilot | Notes |
 | --- | --- | ---: | :---: | --- |
 | Authorization IMS/DB2/MQ extension | module | — | no | extension module; outbound deps: base-copybooks, base-bms, system:ibm-mq, system:ims-dli, system:db2 |
-| COPAUS2C | program | 245 | no | batch; low complexity |
+| COPAUS2C | program | 245 | no | online; low complexity |
 | PAUDBUNL | program | 318 | no | batch; medium complexity |
 | DBUNLDGS | program | 367 | no | batch; medium complexity |
 | PAUDBLOD | program | 370 | no | batch; medium complexity |
@@ -241,7 +241,7 @@ These high-complexity programs should be decomposed into smaller services before
 | system:ibm-mq | 2 | ext-vsam-mq, ext-auth-ims-db2-mq |
 | system:ims-dli | 6 | ext-auth-ims-db2-mq |
 | system:db2 | 5 | ext-trntype-db2, ext-auth-ims-db2-mq |
-| system:lang-runtime | 3 | base-batch |
+| system:lang-runtime | 2 | base-batch |
 | system:zos-util | 3 | base-jcl |
 
 ## Success Criteria

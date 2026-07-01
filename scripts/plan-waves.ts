@@ -118,6 +118,25 @@ interface WavePlan {
 
 const DEFERRED_PROGRAMS = new Set(["COACTUPC", "CBSTM03A"]);
 
+/** JCL jobs that define or load VSAM datasets (environment setup, not batch pipeline). */
+const VSAM_SETUP_JCL = new Set([
+  "ACCTFILE",
+  "CARDFILE",
+  "CUSTFILE",
+  "DEFCUST",
+  "DEFGDGB",
+  "DEFGDGD",
+  "DISCGRP",
+  "DUSRSECJ",
+  "ESDSRRDS",
+  "REPTFILE",
+  "TCATBALF",
+  "TRANCATG",
+  "TRANFILE",
+  "TRANTYPE",
+  "XREFFILE",
+]);
+
 const WAVE_DEFINITIONS: Array<{
   number: number;
   title: string;
@@ -136,6 +155,7 @@ const WAVE_DEFINITIONS: Array<{
     prerequisites: [],
     moduleIds: ["base-copybooks", "base-bms", "base-asm", "base-csd", "samples", "scripts"],
     risk: "low",
+    jclFilter: (j) => j.moduleId === "base-jcl" && VSAM_SETUP_JCL.has(j.name),
   },
   {
     number: 2,
@@ -159,7 +179,8 @@ const WAVE_DEFINITIONS: Array<{
     programFilter: (p) => p.moduleId === "base-batch" && !p.pilotReady,
     jclFilter: (j) =>
       j.moduleId === "base-jcl" &&
-      !["READACCT", "READCARD", "READXREF", "READCUST", "WAITSTEP"].includes(j.name),
+      !["READACCT", "READCARD", "READXREF", "READCUST", "WAITSTEP"].includes(j.name) &&
+      !VSAM_SETUP_JCL.has(j.name),
   },
   {
     number: 4,
@@ -461,7 +482,7 @@ function renderMarkdown(plan: WavePlan, inventory: Inventory): string {
 
   const systemWave: Record<string, number> = {
     "system:cics-bms": 4,
-    "system:lang-runtime": 3,
+    "system:lang-runtime": 2,
     "system:zos-util": 3,
     "system:ibm-mq": 2,
     "system:db2": 5,

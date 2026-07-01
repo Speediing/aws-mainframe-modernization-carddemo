@@ -361,7 +361,7 @@
       "path": "app/app-authorization-ims-db2-mq/cbl/COPAUS2C.cbl",
       "moduleId": "ext-auth-ims-db2-mq",
       "lines": 245,
-      "kind": "batch",
+      "kind": "online",
       "pilotReady": false,
       "complexity": "low",
       "technologies": [
@@ -1438,8 +1438,13 @@
       ],
       "dependencies": {
         "copybooks": [],
-        "calls": [],
-        "jclJobs": []
+        "calls": [
+          "CEEDAYS"
+        ],
+        "jclJobs": [],
+        "systemModules": [
+          "system:lang-runtime"
+        ]
       }
     }
   ],
