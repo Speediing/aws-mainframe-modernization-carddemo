@@ -22,7 +22,7 @@ RUN mkdir -p /artifacts \
          echo "cobol_programs=$(find app -type f -iname '*.cbl' | wc -l | tr -d ' ')"; \
          echo "jcl_jobs=$(find app -type f -iname '*.jcl' | wc -l | tr -d ' ')"; \
          echo "bms_maps=$(find app -type f -iname '*.bms' | wc -l | tr -d ' ')"; \
-         echo "copybooks=$(find app -type f \( -iname '*.cpy' -o -iname '*.CPY' \) | wc -l | tr -d ' ')"; \
+         echo "copybooks=$(find app -type f -iname '*.cpy' | wc -l | tr -d ' ')"; \
          echo "online_entry_txn=CC00"; \
          echo "signon_program=COSGN00C"; \
          echo "batch_entry_job=POSTTRAN"; \
@@ -61,8 +61,7 @@ ENV CARDDEMO_ENTRY_TXN=CC00 \
     CARDDEMO_BATCH_JOB=POSTTRAN \
     CARDDEMO_HLQ=AWS.M2.CARDDEMO
 
-# Port 6000 is the conventional TN3270 listener port for mainframe runtime images.
-EXPOSE 6000
+HEALTHCHECK NONE
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["info"]

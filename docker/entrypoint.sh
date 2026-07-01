@@ -27,6 +27,8 @@ print_inventory() {
   fi
 }
 
+# extract writes to target-dir; it must be writable by the carddemo user
+# (e.g. a mounted volume or a path under /carddemo).
 extract_bundle() {
   target="${1:-/carddemo/export}"
   mkdir -p "${target}"
