@@ -49,9 +49,12 @@ Full-repository scan (329 files) checked for:
 - Route handlers: `@app.get`, `@RequestMapping`, `router.post`, `http.HandleFunc`, etc.
 - API specifications: OpenAPI, Swagger, WSDL, RAML
 - Common API paths: `/api/*`, REST gateway configs, `server.js` / `main.py` entry points
+- Node.js / TypeScript tooling: CLI scripts and build utilities that might embed HTTP servers
 
-**Technologies found:** COBOL, CICS, VSAM, JCL, BMS, IBM MQ, IMS DB, DB2, Assembler  
+**Technologies found:** COBOL, CICS, VSAM, JCL, BMS, IBM MQ, IMS DB, DB2, Assembler, TypeScript (tooling)  
 **HTTP route definitions found:** 0
+
+**Non-HTTP TypeScript tooling:** `scripts/plan-waves.ts` exists as a Node.js CLI that reads `inventory.json` and emits a modernization wave plan (`waves.md`). It performs file I/O and markdown generation only — no HTTP server, route handlers, or API bindings were found in that script or elsewhere in the repository.
 
 ---
 
@@ -87,7 +90,7 @@ No HTTP routes scored in the needs-work range (40–69).
 
 **Evidence:**
 
-- No `.py`, `.js`, `.ts`, `.go`, or `.java` source files in the repository
+- No HTTP-serving `.py`, `.js`, `.ts`, `.go`, or `.java` source files — the only TypeScript file is `scripts/plan-waves.ts`, a CLI wave planner with no routes
 - No `package.json`, `requirements.txt`, or OpenAPI/Swagger files
 - Roadmap item in `README.md`: *"Web Service connectivity"* and *"Exposure of transactions for distributed application integration"* — planned, not shipped
 
@@ -105,6 +108,76 @@ These surfaces are **not HTTP routes** and were not counted in the summary above
 | CICS transactions `CC00`, `CM00`, `CAVW`, `CAUP`, `CCLI`, `CCDL`, `CCUP`, `CT00`, `CT01`, `CT02`, `CR00`, `CB00`, `CA00`, `CU00`–`CU03`, `CPVS`, `CPVD`, `CTTU`, `CTLI` | 3270 terminal | 18 | BMS screen-driven flows; require terminal emulation; side effects not machine-documented per transaction |
 
 CICS transaction definitions: `app/csd/CARDDEMO.CSD`, `app/app-authorization-ims-db2-mq/csd/CRDDEMO2.csd`, `app/app-transaction-type-db2/csd/CRDDEMOD.csd`, `app/app-vsam-mq/csd/CRDDEMOM.csd`.
+
+---
+
+## MQ Interface Score Breakdown
+
+The composite scores in the table above sum eight weighted dimensions (see [Scoring Methodology](#scoring-methodology)). Breakdowns for the three MQ-backed interfaces:
+
+### CDRD — System date inquiry (composite **52**)
+
+| Dimension | Score | Max | Notes |
+|-----------|------:|----:|-------|
+| Discoverability | 8 | 15 | Message formats documented in `app/app-vsam-mq/README.md`; no OpenAPI or route catalog |
+| Schema | 9 | 15 | Fixed-width COBOL copybook layout (`DATE` request/response); not JSON Schema |
+| Authentication | 3 | 10 | MQ channel + CICS/RACF; no programmatic API-key or token model |
+| Error contract | 4 | 10 | MQ/CICS return codes only; no structured error payload |
+| Idempotency | 9 | 10 | Read-only inquiry; safe to retry |
+| Observability | 5 | 10 | MQ and CICS monitoring available; no standard correlation-ID contract |
+| Testing | 8 | 15 | EBCDIC sample data in repo; no automated MQ integration tests |
+| Autonomy | 6 | 15 | Requires CICS + MQ runtime; synchronous pattern over async queues |
+| **Total** | **52** | **100** | |
+
+### CDRA — Account details inquiry (composite **54**)
+
+| Dimension | Score | Max | Notes |
+|-----------|------:|----:|-------|
+| Discoverability | 8 | 15 | Copybook-defined request/response in `app/app-vsam-mq/README.md` |
+| Schema | 10 | 15 | Account request/response buffers documented; 300-byte response field |
+| Authentication | 4 | 10 | Account number in message body; MQ channel auth only |
+| Error contract | 5 | 10 | VSAM/MQ error paths; no HTTP-style error schema |
+| Idempotency | 9 | 10 | Read-only VSAM lookup; safe to retry |
+| Observability | 5 | 10 | Same MQ/CICS observability gaps as CDRD |
+| Testing | 8 | 15 | EBCDIC test data; no CI MQ harness |
+| Autonomy | 5 | 15 | CICS + MQ + VSAM dependency chain |
+| **Total** | **54** | **100** | |
+
+### CP00 — Authorization request processor (composite **58**)
+
+| Dimension | Score | Max | Notes |
+|-----------|------:|----:|-------|
+| Discoverability | 10 | 15 | CSV field order documented in `app/app-authorization-ims-db2-mq/README.md`; copybooks `CCPAURQY`/`CCPAURLY` |
+| Schema | 8 | 15 | CSV message format specified; loose typing, no JSON Schema |
+| Authentication | 4 | 10 | MQ queue access control; no agent-facing auth layer |
+| Error contract | 6 | 10 | Error logging copybook `CCPAUERY`; MQ reason codes |
+| Idempotency | 4 | 10 | Writes to IMS DB and DB2; retries may duplicate authorizations |
+| Observability | 6 | 10 | Authorization audit trail in IMS; limited distributed tracing |
+| Testing | 10 | 15 | Sample MQ messages and EBCDIC IMS/DB2 fixtures in extension module |
+| Autonomy | 10 | 15 | MQ-triggered processing without 3270; still needs full IMS/DB2/MQ stack |
+| **Total** | **58** | **100** | |
+
+---
+
+## Prioritized HTTP Gateway Candidates
+
+Read-only inquiry endpoints should be exposed first — they carry the lowest side-effect risk and map cleanly to existing MQ message formats. Mutating flows (authorization posting, transaction add, bill pay) should follow once error contracts and idempotency are standardized.
+
+| Priority | Proposed route | Method | Underlying surface | MQ / terminal | Rationale |
+|:--------:|----------------|--------|--------------------|---------------|-----------|
+| 1 | `/system/date` | GET | CDRD → CODATE01 | MQ | Simplest read-only flow; fixed `DATE` message type; no VSAM lookup |
+| 2 | `/accounts/{accountId}` | GET | CDRA → COACCT01 | MQ | Read-only account inquiry; copybook-documented request/response |
+| 3 | `/accounts/{accountId}/view` | GET | CAVW → COACTVWC | 3270 | Account view via BMS; requires screen-field mapping to JSON |
+| 4 | `/cards/{cardNumber}` | GET | CCDL → COCRDSLC | 3270 | Read-only card detail; depends on sign-on session or gateway auth shim |
+| 5 | `/transactions/{transactionId}` | GET | CT01 → COTRN01C | 3270 | Single transaction lookup; read-only |
+| 6 | `/authorizations/pending` | GET | CPVS → COPAUS0C | 3270 | Authorization summary; read-only but IMS-dependent |
+| 7 | `/authorizations/{authId}` | GET | CPVD → COPAUS1C | 3270 | Authorization detail view |
+| 8 | `/transactions` | GET | CT00 → COTRN00C | 3270 | Transaction list; pagination contract needed |
+| — | `/authorizations` | POST | CP00 → COPAUA0C | MQ | **Deferred** — IMS/DB2 side effects; requires idempotency keys and structured errors |
+| — | `/transactions` | POST | CT02 → COTRN02C | 3270 | **Deferred** — mutating; VSAM write with no retry contract |
+| — | `/accounts/{accountId}` | PATCH | CAUP → COACTUPC | 3270 | **Deferred** — account update with validation rules not machine-documented |
+
+**Recommended first milestone:** wrap CDRD and CDRA behind a thin HTTP-to-MQ adapter, publish OpenAPI 3.x specs for the two GET routes, and add JSON equivalents of the existing copybook message layouts.
 
 ---
 
@@ -132,6 +205,8 @@ For teams planning HTTP wrappers, these are the underlying online entry points d
 | CCLI | COCRDLIC | Credit card list |
 | CCDL | COCRDSLC | Credit card view |
 | CCUP | COCRDUPC | Credit card update |
+| CDRA | COACCT01 | Account details inquiry via MQ |
+| CDRD | CODATE01 | System date inquiry via MQ |
 | CT00 | COTRN00C | Transaction list |
 | CT01 | COTRN01C | Transaction view |
 | CT02 | COTRN02C | Transaction add |
@@ -147,5 +222,3 @@ For teams planning HTTP wrappers, these are the underlying online entry points d
 | CPVD | COPAUS1C | Pending authorization details |
 | CTTU | COTRTUPC | Transaction type add/edit |
 | CTLI | COTRTLIC | Transaction type list/update/delete |
-| CDRD | CODATE01 | System date inquiry via MQ |
-| CDRA | COACCT01 | Account details inquiry via MQ |
