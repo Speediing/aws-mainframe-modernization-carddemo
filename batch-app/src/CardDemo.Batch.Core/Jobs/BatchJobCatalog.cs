@@ -11,5 +11,12 @@ public static class BatchJobCatalog
             ["post-transactions"] = "CBTRN02C",
             ["calculate-interest"] = "CBACT04C",
             ["transaction-report"] = "CBTRN03C",
+            ["read-account"] = "CBACT01C",
+            ["read-card"] = "CBACT02C",
+            ["read-xref"] = "CBACT03C",
+            ["read-customer"] = "CBCUS01C",
+            ["create-statement"] = "CBSTM03A",
+            ["export-data"] = "CBEXPORT",
+            ["import-data"] = "CBIMPORT",
         };
 }

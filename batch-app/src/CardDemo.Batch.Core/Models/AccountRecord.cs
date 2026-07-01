@@ -7,6 +7,9 @@ public sealed class AccountRecord
 {
     public required long AccountId { get; init; }
 
+    /// <summary>
+    /// Maps CVACT01Y <c>ACCT-ACTIVE-STATUS</c>: <c>Y</c> = active, <c>N</c> = inactive.
+    /// </summary>
     public required bool IsActive { get; init; }
 
     public required decimal CurrentBalance { get; set; }

@@ -35,7 +35,14 @@ public sealed class TransactionPostingService
                 continue;
             }
 
-            account.CurrentBalance += transaction.Amount;
+            var projectedBalance = account.CurrentBalance + transaction.Amount;
+            if (projectedBalance > account.CreditLimit)
+            {
+                rejected.Add(transaction);
+                continue;
+            }
+
+            account.CurrentBalance = projectedBalance;
             posted.Add(new TransactionRecord
             {
                 TransactionId = transaction.TransactionId,

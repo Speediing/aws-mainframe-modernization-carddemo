@@ -118,6 +118,40 @@ public class TransactionPostingServiceTests
     }
 
     [Fact]
+    public void PostDailyTransactions_RejectsOverlimitTransaction()
+    {
+        var accounts = new Dictionary<long, AccountRecord>
+        {
+            [1] = new AccountRecord
+            {
+                AccountId = 1,
+                IsActive = true,
+                CurrentBalance = 100m,
+                CreditLimit = 100m,
+                CashCreditLimit = 50m,
+                GroupId = "A000000000",
+            },
+        };
+
+        var crossReferences = new Dictionary<string, CardCrossReference>
+        {
+            ["4111111111111111"] = new CardCrossReference
+            {
+                CardNumber = "4111111111111111",
+                CustomerId = 1001,
+                AccountId = 1,
+            },
+        };
+
+        var transactions = new[] { CreateTransaction("4111111111111111", 1m) };
+        var result = _service.PostDailyTransactions(transactions, crossReferences, accounts);
+
+        Assert.Empty(result.PostedTransactions);
+        Assert.Single(result.RejectedTransactions);
+        Assert.Equal(100m, accounts[1].CurrentBalance);
+    }
+
+    [Fact]
     public void PostDailyTransactions_RejectsInactiveAccount()
     {
         var accounts = new Dictionary<long, AccountRecord>
