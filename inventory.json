@@ -1,0 +1,2232 @@
+{
+  "generatedAt": "2026-07-01T02:57:58.996Z",
+  "repository": "CardDemo",
+  "summary": {
+    "programs": 44,
+    "copybooks": 62,
+    "jclJobs": 46,
+    "modules": 12
+  },
+  "modules": [
+    {
+      "id": "base-copybooks",
+      "name": "Base copybooks",
+      "path": "app/cpy/",
+      "kind": "foundation",
+      "technologies": [
+        "copybook",
+        "vsam-records"
+      ],
+      "pilotReady": true,
+      "inboundModules": [
+        "base-online",
+        "base-batch",
+        "ext-vsam-mq",
+        "ext-auth-ims-db2-mq"
+      ],
+      "outboundModules": [],
+      "priority": 1
+    },
+    {
+      "id": "base-bms",
+      "name": "Base BMS maps",
+      "path": "app/bms/",
+      "kind": "foundation",
+      "technologies": [
+        "bms",
+        "cics"
+      ],
+      "pilotReady": true,
+      "inboundModules": [
+        "base-online",
+        "ext-auth-ims-db2-mq",
+        "ext-trntype-db2"
+      ],
+      "outboundModules": [],
+      "priority": 1
+    },
+    {
+      "id": "base-asm",
+      "name": "Assembler utilities",
+      "path": "app/asm/",
+      "kind": "foundation",
+      "technologies": [
+        "assembler"
+      ],
+      "pilotReady": true,
+      "inboundModules": [
+        "base-batch"
+      ],
+      "outboundModules": [],
+      "priority": 1
+    },
+    {
+      "id": "base-csd",
+      "name": "CICS CSD definitions",
+      "path": "app/csd/",
+      "kind": "foundation",
+      "technologies": [
+        "cics",
+        "vsam"
+      ],
+      "pilotReady": true,
+      "inboundModules": [
+        "base-online"
+      ],
+      "outboundModules": [],
+      "priority": 1
+    },
+    {
+      "id": "base-jcl",
+      "name": "Base JCL",
+      "path": "app/jcl/",
+      "kind": "foundation",
+      "technologies": [
+        "jcl"
+      ],
+      "pilotReady": true,
+      "inboundModules": [],
+      "outboundModules": [
+        "base-batch"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "base-batch",
+      "name": "Base batch programs",
+      "path": "app/cbl/",
+      "kind": "batch",
+      "technologies": [
+        "cobol",
+        "vsam",
+        "jcl"
+      ],
+      "pilotReady": true,
+      "inboundModules": [
+        "base-jcl",
+        "base-online"
+      ],
+      "outboundModules": [
+        "base-copybooks",
+        "base-asm",
+        "system:lang-runtime"
+      ],
+      "priority": 3
+    },
+    {
+      "id": "base-online",
+      "name": "Base online programs",
+      "path": "app/cbl/",
+      "kind": "online",
+      "technologies": [
+        "cobol",
+        "cics",
+        "bms",
+        "vsam"
+      ],
+      "pilotReady": false,
+      "inboundModules": [],
+      "outboundModules": [
+        "base-copybooks",
+        "base-bms",
+        "base-csd",
+        "base-batch",
+        "system:cics-bms"
+      ],
+      "priority": 5
+    },
+    {
+      "id": "ext-vsam-mq",
+      "name": "VSAM/MQ extension",
+      "path": "app/app-vsam-mq/",
+      "kind": "extension",
+      "technologies": [
+        "cobol",
+        "mq",
+        "vsam"
+      ],
+      "pilotReady": true,
+      "inboundModules": [],
+      "outboundModules": [
+        "base-copybooks",
+        "system:ibm-mq"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "ext-trntype-db2",
+      "name": "Transaction type DB2 extension",
+      "path": "app/app-transaction-type-db2/",
+      "kind": "extension",
+      "technologies": [
+        "cobol",
+        "cics",
+        "db2",
+        "bms"
+      ],
+      "pilotReady": false,
+      "inboundModules": [],
+      "outboundModules": [
+        "base-copybooks",
+        "base-bms",
+        "system:db2"
+      ],
+      "priority": 6
+    },
+    {
+      "id": "ext-auth-ims-db2-mq",
+      "name": "Authorization IMS/DB2/MQ extension",
+      "path": "app/app-authorization-ims-db2-mq/",
+      "kind": "extension",
+      "technologies": [
+        "cobol",
+        "cics",
+        "ims",
+        "db2",
+        "mq",
+        "vsam"
+      ],
+      "pilotReady": false,
+      "inboundModules": [],
+      "outboundModules": [
+        "base-copybooks",
+        "base-bms",
+        "system:ibm-mq",
+        "system:ims-dli",
+        "system:db2"
+      ],
+      "priority": 7
+    },
+    {
+      "id": "samples",
+      "name": "Build samples",
+      "path": "samples/",
+      "kind": "tooling",
+      "technologies": [
+        "jcl"
+      ],
+      "pilotReady": true,
+      "inboundModules": [],
+      "outboundModules": [],
+      "priority": 1
+    },
+    {
+      "id": "scripts",
+      "name": "Dev tooling scripts",
+      "path": "scripts/",
+      "kind": "tooling",
+      "technologies": [
+        "shell"
+      ],
+      "pilotReady": true,
+      "inboundModules": [],
+      "outboundModules": [],
+      "priority": 1
+    }
+  ],
+  "programs": [
+    {
+      "name": "CBPAUP0C",
+      "path": "app/app-authorization-ims-db2-mq/cbl/CBPAUP0C.cbl",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 387,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "ims"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CIPAUSMY",
+          "CIPAUDTY"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COPAUA0C",
+      "path": "app/app-authorization-ims-db2-mq/cbl/COPAUA0C.cbl",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 1027,
+      "kind": "online",
+      "transaction": "CP00",
+      "pilotReady": false,
+      "complexity": "high",
+      "technologies": [
+        "cobol",
+        "cics",
+        "ims",
+        "mq",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CMQODV",
+          "CMQMDV",
+          "CMQV",
+          "CMQTML",
+          "CMQPMOV",
+          "CMQGMOV",
+          "CCPAURQY",
+          "CCPAURLY",
+          "CCPAUERY",
+          "CIPAUSMY",
+          "CIPAUDTY",
+          "CVACT03Y",
+          "CVACT01Y",
+          "CVCUS01Y"
+        ],
+        "calls": [
+          "MQOPEN",
+          "MQGET",
+          "MQPUT1",
+          "MQCLOSE"
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COPAUS0C",
+      "path": "app/app-authorization-ims-db2-mq/cbl/COPAUS0C.cbl",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 1033,
+      "kind": "online",
+      "transaction": "CPVS",
+      "pilotReady": false,
+      "complexity": "high",
+      "technologies": [
+        "cobol",
+        "cics",
+        "ims",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COPAU00",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSMSG02Y",
+          "CVACT01Y",
+          "CVACT02Y",
+          "CVACT03Y",
+          "CVCUS01Y",
+          "CIPAUSMY",
+          "CIPAUDTY",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COPAUS1C",
+      "path": "app/app-authorization-ims-db2-mq/cbl/COPAUS1C.cbl",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 605,
+      "kind": "online",
+      "transaction": "CPVD",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "ims",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COPAU01",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSMSG02Y",
+          "CIPAUSMY",
+          "CIPAUDTY",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COPAUS2C",
+      "path": "app/app-authorization-ims-db2-mq/cbl/COPAUS2C.cbl",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 245,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "db2",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CIPAUDTY"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "DBUNLDGS",
+      "path": "app/app-authorization-ims-db2-mq/cbl/DBUNLDGS.CBL",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 367,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "ims"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "IMSFUNCS",
+          "CIPAUSMY",
+          "CIPAUDTY",
+          "PAUTBPCB",
+          "PASFLPCB",
+          "PADFLPCB"
+        ],
+        "calls": [
+          "CBLTDLI",
+          "                  02020002\n      *     DISPLAY ",
+          "                    02460002\n      *        DISPLAY "
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "PAUDBLOD",
+      "path": "app/app-authorization-ims-db2-mq/cbl/PAUDBLOD.CBL",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 370,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "ims"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "IMSFUNCS",
+          "CIPAUSMY",
+          "CIPAUDTY",
+          "PAUTBPCB"
+        ],
+        "calls": [
+          "CBLTDLI",
+          "                  02130167\n      *     DISPLAY ",
+          "                    02402067\n      *        DISPLAY "
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "PAUDBUNL",
+      "path": "app/app-authorization-ims-db2-mq/cbl/PAUDBUNL.CBL",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "lines": 318,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "ims"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "IMSFUNCS",
+          "CIPAUSMY",
+          "CIPAUDTY",
+          "PAUTBPCB"
+        ],
+        "calls": [
+          "CBLTDLI",
+          "                  02130157\n      *     DISPLAY ",
+          "                    02402057\n      *        DISPLAY "
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COBTUPDT",
+      "path": "app/app-transaction-type-db2/cbl/COBTUPDT.cbl",
+      "moduleId": "ext-trntype-db2",
+      "lines": 238,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "db2",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COTRTLIC",
+      "path": "app/app-transaction-type-db2/cbl/COTRTLIC.cbl",
+      "moduleId": "ext-trntype-db2",
+      "lines": 2099,
+      "kind": "online",
+      "transaction": "CTLI",
+      "pilotReady": false,
+      "complexity": "high",
+      "technologies": [
+        "cobol",
+        "cics",
+        "db2",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COTRTUPC",
+      "path": "app/app-transaction-type-db2/cbl/COTRTUPC.cbl",
+      "moduleId": "ext-trntype-db2",
+      "lines": 1703,
+      "kind": "online",
+      "transaction": "CTTU",
+      "pilotReady": false,
+      "complexity": "high",
+      "technologies": [
+        "cobol",
+        "cics",
+        "db2",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COACCT01",
+      "path": "app/app-vsam-mq/cbl/COACCT01.cbl",
+      "moduleId": "ext-vsam-mq",
+      "lines": 621,
+      "kind": "online",
+      "transaction": "CDRA",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "mq",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVACT01Y"
+        ],
+        "calls": [
+          "MQOPEN",
+          "MQGET",
+          "MQPUT",
+          "MQCLOSE"
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "CODATE01",
+      "path": "app/app-vsam-mq/cbl/CODATE01.cbl",
+      "moduleId": "ext-vsam-mq",
+      "lines": 525,
+      "kind": "online",
+      "transaction": "CDRD",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "mq",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [],
+        "calls": [
+          "MQOPEN",
+          "MQGET",
+          "MQPUT",
+          "MQCLOSE"
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "CBACT01C",
+      "path": "app/cbl/CBACT01C.cbl",
+      "moduleId": "base-batch",
+      "lines": 431,
+      "kind": "batch",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVACT01Y",
+          "CODATECN"
+        ],
+        "calls": [
+          "COBDATFT",
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "READACCT"
+        ]
+      }
+    },
+    {
+      "name": "CBACT02C",
+      "path": "app/cbl/CBACT02C.cbl",
+      "moduleId": "base-batch",
+      "lines": 179,
+      "kind": "batch",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVACT02Y"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "READCARD"
+        ]
+      }
+    },
+    {
+      "name": "CBACT03C",
+      "path": "app/cbl/CBACT03C.cbl",
+      "moduleId": "base-batch",
+      "lines": 179,
+      "kind": "batch",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVACT03Y"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "READXREF"
+        ]
+      }
+    },
+    {
+      "name": "CBACT04C",
+      "path": "app/cbl/CBACT04C.cbl",
+      "moduleId": "base-batch",
+      "lines": 653,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVTRA01Y",
+          "CVACT03Y",
+          "CVTRA02Y",
+          "CVACT01Y",
+          "CVTRA05Y"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "INTCALC"
+        ]
+      }
+    },
+    {
+      "name": "CBCUS01C",
+      "path": "app/cbl/CBCUS01C.cbl",
+      "moduleId": "base-batch",
+      "lines": 179,
+      "kind": "batch",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCUS01Y"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "READCUST"
+        ]
+      }
+    },
+    {
+      "name": "CBEXPORT",
+      "path": "app/cbl/CBEXPORT.cbl",
+      "moduleId": "base-batch",
+      "lines": 583,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCUS01Y",
+          "CVACT01Y",
+          "CVACT03Y",
+          "CVTRA05Y",
+          "CVACT02Y",
+          "CVEXPORT"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "CBEXPORT"
+        ]
+      }
+    },
+    {
+      "name": "CBIMPORT",
+      "path": "app/cbl/CBIMPORT.cbl",
+      "moduleId": "base-batch",
+      "lines": 488,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCUS01Y",
+          "CVACT01Y",
+          "CVACT03Y",
+          "CVTRA05Y",
+          "CVACT02Y",
+          "CVEXPORT"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "CBIMPORT"
+        ]
+      }
+    },
+    {
+      "name": "CBSTM03A",
+      "path": "app/cbl/CBSTM03A.CBL",
+      "moduleId": "base-batch",
+      "lines": 925,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COSTM01",
+          "CVACT03Y",
+          "CUSTREC",
+          "CVACT01Y"
+        ],
+        "calls": [
+          "CBSTM03B",
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "CREASTMT"
+        ]
+      }
+    },
+    {
+      "name": "CBSTM03B",
+      "path": "app/cbl/CBSTM03B.CBL",
+      "moduleId": "base-batch",
+      "lines": 231,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "CBTRN01C",
+      "path": "app/cbl/CBTRN01C.cbl",
+      "moduleId": "base-batch",
+      "lines": 495,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVTRA06Y",
+          "CVCUS01Y",
+          "CVACT03Y",
+          "CVACT02Y",
+          "CVACT01Y",
+          "CVTRA05Y"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "CBTRN02C",
+      "path": "app/cbl/CBTRN02C.cbl",
+      "moduleId": "base-batch",
+      "lines": 732,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVTRA06Y",
+          "CVTRA05Y",
+          "CVACT03Y",
+          "CVACT01Y",
+          "CVTRA01Y"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "POSTTRAN"
+        ]
+      }
+    },
+    {
+      "name": "CBTRN03C",
+      "path": "app/cbl/CBTRN03C.cbl",
+      "moduleId": "base-batch",
+      "lines": 650,
+      "kind": "batch",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVTRA05Y",
+          "CVACT03Y",
+          "CVTRA03Y",
+          "CVTRA04Y",
+          "CVTRA07Y"
+        ],
+        "calls": [
+          "CEE3ABD"
+        ],
+        "jclJobs": [
+          "TRANREPT"
+        ]
+      }
+    },
+    {
+      "name": "COACTUPC",
+      "path": "app/cbl/COACTUPC.cbl",
+      "moduleId": "base-online",
+      "lines": 4237,
+      "kind": "online",
+      "transaction": "CAUP",
+      "pilotReady": false,
+      "complexity": "high",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCRD01Y",
+          "CSLKPCDY",
+          "DFHBMSCA",
+          "DFHAID",
+          "COTTL01Y",
+          "COACTUP",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSMSG02Y",
+          "CSUSR01Y",
+          "CVACT01Y",
+          "CVACT03Y",
+          "CVCUS01Y",
+          "COCOM01Y",
+          "CSSETATY",
+          "CSUTLDPY"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COACTVWC",
+      "path": "app/cbl/COACTVWC.cbl",
+      "moduleId": "base-online",
+      "lines": 942,
+      "kind": "online",
+      "transaction": "CAVW",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCRD01Y",
+          "COCOM01Y",
+          "DFHBMSCA",
+          "DFHAID",
+          "COTTL01Y",
+          "COACTVW",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSMSG02Y",
+          "CSUSR01Y",
+          "CVACT01Y",
+          "CVACT02Y",
+          "CVACT03Y",
+          "CVCUS01Y"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COADM01C",
+      "path": "app/cbl/COADM01C.cbl",
+      "moduleId": "base-online",
+      "lines": 289,
+      "kind": "online",
+      "transaction": "CA00",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COADM02Y",
+          "COADM01",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COBIL00C",
+      "path": "app/cbl/COBIL00C.cbl",
+      "moduleId": "base-online",
+      "lines": 573,
+      "kind": "online",
+      "transaction": "CB00",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COBIL00",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CVACT01Y",
+          "CVACT03Y",
+          "CVTRA05Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COBSWAIT",
+      "path": "app/cbl/COBSWAIT.cbl",
+      "moduleId": "base-batch",
+      "lines": 42,
+      "kind": "utility",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [],
+        "calls": [
+          "MVSWAIT"
+        ],
+        "jclJobs": [
+          "WAITSTEP"
+        ]
+      }
+    },
+    {
+      "name": "COCRDLIC",
+      "path": "app/cbl/COCRDLIC.cbl",
+      "moduleId": "base-online",
+      "lines": 1460,
+      "kind": "online",
+      "transaction": "CCLI",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCRD01Y",
+          "COCOM01Y",
+          "DFHBMSCA",
+          "DFHAID",
+          "COTTL01Y",
+          "COCRDLI",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "CVACT02Y"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COCRDSLC",
+      "path": "app/cbl/COCRDSLC.cbl",
+      "moduleId": "base-online",
+      "lines": 888,
+      "kind": "online",
+      "transaction": "CCDL",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCRD01Y",
+          "COCOM01Y",
+          "DFHBMSCA",
+          "DFHAID",
+          "COTTL01Y",
+          "COCRDSL",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSMSG02Y",
+          "CSUSR01Y",
+          "CVACT02Y",
+          "CVCUS01Y"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COCRDUPC",
+      "path": "app/cbl/COCRDUPC.cbl",
+      "moduleId": "base-online",
+      "lines": 1561,
+      "kind": "online",
+      "transaction": "CCUP",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "CVCRD01Y",
+          "COCOM01Y",
+          "DFHBMSCA",
+          "DFHAID",
+          "COTTL01Y",
+          "COCRDUP",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSMSG02Y",
+          "CSUSR01Y",
+          "CVACT02Y",
+          "CVCUS01Y"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COMEN01C",
+      "path": "app/cbl/COMEN01C.cbl",
+      "moduleId": "base-online",
+      "lines": 309,
+      "kind": "online",
+      "transaction": "CM00",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COMEN02Y",
+          "COMEN01",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "CORPT00C",
+      "path": "app/cbl/CORPT00C.cbl",
+      "moduleId": "base-online",
+      "lines": 650,
+      "kind": "online",
+      "transaction": "CR00",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "CORPT00",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CVTRA05Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [
+          "CSUTLDTC"
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COSGN00C",
+      "path": "app/cbl/COSGN00C.cbl",
+      "moduleId": "base-online",
+      "lines": 261,
+      "kind": "online",
+      "transaction": "CC00",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COSGN00",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COTRN00C",
+      "path": "app/cbl/COTRN00C.cbl",
+      "moduleId": "base-online",
+      "lines": 700,
+      "kind": "online",
+      "transaction": "CT00",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COTRN00",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CVTRA05Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COTRN01C",
+      "path": "app/cbl/COTRN01C.cbl",
+      "moduleId": "base-online",
+      "lines": 331,
+      "kind": "online",
+      "transaction": "CT01",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COTRN01",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CVTRA05Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COTRN02C",
+      "path": "app/cbl/COTRN02C.cbl",
+      "moduleId": "base-online",
+      "lines": 784,
+      "kind": "online",
+      "transaction": "CT02",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COTRN02",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CVTRA05Y",
+          "CVACT01Y",
+          "CVACT03Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [
+          "CSUTLDTC"
+        ],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COUSR00C",
+      "path": "app/cbl/COUSR00C.cbl",
+      "moduleId": "base-online",
+      "lines": 696,
+      "kind": "online",
+      "transaction": "CU00",
+      "pilotReady": false,
+      "complexity": "medium",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COUSR00",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COUSR01C",
+      "path": "app/cbl/COUSR01C.cbl",
+      "moduleId": "base-online",
+      "lines": 300,
+      "kind": "online",
+      "transaction": "CU01",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COUSR01",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COUSR02C",
+      "path": "app/cbl/COUSR02C.cbl",
+      "moduleId": "base-online",
+      "lines": 415,
+      "kind": "online",
+      "transaction": "CU02",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COUSR02",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "COUSR03C",
+      "path": "app/cbl/COUSR03C.cbl",
+      "moduleId": "base-online",
+      "lines": 360,
+      "kind": "online",
+      "transaction": "CU03",
+      "pilotReady": false,
+      "complexity": "low",
+      "technologies": [
+        "cobol",
+        "cics",
+        "vsam"
+      ],
+      "dependencies": {
+        "copybooks": [
+          "COCOM01Y",
+          "COUSR03",
+          "COTTL01Y",
+          "CSDAT01Y",
+          "CSMSG01Y",
+          "CSUSR01Y",
+          "DFHAID",
+          "DFHBMSCA"
+        ],
+        "calls": [],
+        "jclJobs": []
+      }
+    },
+    {
+      "name": "CSUTLDTC",
+      "path": "app/cbl/CSUTLDTC.cbl",
+      "moduleId": "base-batch",
+      "lines": 158,
+      "kind": "utility",
+      "pilotReady": true,
+      "complexity": "low",
+      "technologies": [
+        "cobol"
+      ],
+      "dependencies": {
+        "copybooks": [],
+        "calls": [],
+        "jclJobs": []
+      }
+    }
+  ],
+  "jclJobs": [
+    {
+      "name": "CBPAUP0J",
+      "path": "app/app-authorization-ims-db2-mq/jcl/CBPAUP0J.jcl",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "programs": [
+        "DFSRRC00"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "DBPAUTP0",
+      "path": "app/app-authorization-ims-db2-mq/jcl/DBPAUTP0.jcl",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "programs": [
+        "DFSRRC00"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "LOADPADB",
+      "path": "app/app-authorization-ims-db2-mq/jcl/LOADPADB.JCL",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "programs": [
+        "DFSRRC00"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "UNLDGSAM",
+      "path": "app/app-authorization-ims-db2-mq/jcl/UNLDGSAM.JCL",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "programs": [
+        "DFSRRC00"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "UNLDPADB",
+      "path": "app/app-authorization-ims-db2-mq/jcl/UNLDPADB.JCL",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "programs": [
+        "DFSRRC00"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "CREADB21",
+      "path": "app/app-transaction-type-db2/jcl/CREADB21.jcl",
+      "moduleId": "ext-trntype-db2",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "MNTTRDB2",
+      "path": "app/app-transaction-type-db2/jcl/MNTTRDB2.jcl",
+      "moduleId": "ext-trntype-db2",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "TRANEXTR",
+      "path": "app/app-transaction-type-db2/jcl/TRANEXTR.jcl",
+      "moduleId": "ext-trntype-db2",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "ACCTFILE",
+      "path": "app/jcl/ACCTFILE.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "CARDFILE",
+      "path": "app/jcl/CARDFILE.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "SDSF"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "CBADMCDJ",
+      "path": "app/jcl/CBADMCDJ.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "CBEXPORT",
+      "path": "app/jcl/CBEXPORT.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBEXPORT"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "CBIMPORT",
+      "path": "app/jcl/CBIMPORT.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBIMPORT"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "CLOSEFIL",
+      "path": "app/jcl/CLOSEFIL.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "SDSF"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "COMBTRAN",
+      "path": "app/jcl/COMBTRAN.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "CREASTMT",
+      "path": "app/jcl/CREASTMT.JCL",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBSTM03A"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "CUSTFILE",
+      "path": "app/jcl/CUSTFILE.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "SDSF"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "DALYREJS",
+      "path": "app/jcl/DALYREJS.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "DEFCUST",
+      "path": "app/jcl/DEFCUST.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "DEFGDGB",
+      "path": "app/jcl/DEFGDGB.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "DEFGDGD",
+      "path": "app/jcl/DEFGDGD.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "DISCGRP",
+      "path": "app/jcl/DISCGRP.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "DUSRSECJ",
+      "path": "app/jcl/DUSRSECJ.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "ESDSRRDS",
+      "path": "app/jcl/ESDSRRDS.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "FTPJCL",
+      "path": "app/jcl/FTPJCL.JCL",
+      "moduleId": "base-jcl",
+      "programs": [
+        "FTP"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "INTCALC",
+      "path": "app/jcl/INTCALC.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBACT04C"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "INTRDRJ1",
+      "path": "app/jcl/INTRDRJ1.JCL",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "INTRDRJ2",
+      "path": "app/jcl/INTRDRJ2.JCL",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "OPENFIL",
+      "path": "app/jcl/OPENFIL.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "SDSF"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "POSTTRAN",
+      "path": "app/jcl/POSTTRAN.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBTRN02C"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "PRTCATBL",
+      "path": "app/jcl/PRTCATBL.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "READACCT",
+      "path": "app/jcl/READACCT.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBACT01C"
+      ],
+      "pilotReady": true
+    },
+    {
+      "name": "READCARD",
+      "path": "app/jcl/READCARD.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBACT02C"
+      ],
+      "pilotReady": true
+    },
+    {
+      "name": "READCUST",
+      "path": "app/jcl/READCUST.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBCUS01C"
+      ],
+      "pilotReady": true
+    },
+    {
+      "name": "READXREF",
+      "path": "app/jcl/READXREF.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBACT03C"
+      ],
+      "pilotReady": true
+    },
+    {
+      "name": "REPTFILE",
+      "path": "app/jcl/REPTFILE.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "TCATBALF",
+      "path": "app/jcl/TCATBALF.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "TRANBKP",
+      "path": "app/jcl/TRANBKP.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "TRANCATG",
+      "path": "app/jcl/TRANCATG.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "TRANFILE",
+      "path": "app/jcl/TRANFILE.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "SDSF"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "TRANIDX",
+      "path": "app/jcl/TRANIDX.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "TRANREPT",
+      "path": "app/jcl/TRANREPT.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "CBTRN03C"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "TRANTYPE",
+      "path": "app/jcl/TRANTYPE.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    },
+    {
+      "name": "TXT2PDF1",
+      "path": "app/jcl/TXT2PDF1.JCL",
+      "moduleId": "base-jcl",
+      "programs": [
+        "IKJEFT1B"
+      ],
+      "pilotReady": false
+    },
+    {
+      "name": "WAITSTEP",
+      "path": "app/jcl/WAITSTEP.jcl",
+      "moduleId": "base-jcl",
+      "programs": [
+        "COBSWAIT"
+      ],
+      "pilotReady": true
+    },
+    {
+      "name": "XREFFILE",
+      "path": "app/jcl/XREFFILE.jcl",
+      "moduleId": "base-jcl",
+      "programs": [],
+      "pilotReady": true
+    }
+  ],
+  "copybooks": [
+    {
+      "name": "CCPAUERY",
+      "path": "app/app-authorization-ims-db2-mq/cpy/CCPAUERY.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 1
+    },
+    {
+      "name": "CCPAURLY",
+      "path": "app/app-authorization-ims-db2-mq/cpy/CCPAURLY.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 1
+    },
+    {
+      "name": "CCPAURQY",
+      "path": "app/app-authorization-ims-db2-mq/cpy/CCPAURQY.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 1
+    },
+    {
+      "name": "CIPAUDTY",
+      "path": "app/app-authorization-ims-db2-mq/cpy/CIPAUDTY.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 8
+    },
+    {
+      "name": "CIPAUSMY",
+      "path": "app/app-authorization-ims-db2-mq/cpy/CIPAUSMY.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 7
+    },
+    {
+      "name": "IMSFUNCS",
+      "path": "app/app-authorization-ims-db2-mq/cpy/IMSFUNCS.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 3
+    },
+    {
+      "name": "PADFLPCB",
+      "path": "app/app-authorization-ims-db2-mq/cpy/PADFLPCB.CPY",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 1
+    },
+    {
+      "name": "PASFLPCB",
+      "path": "app/app-authorization-ims-db2-mq/cpy/PASFLPCB.CPY",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 1
+    },
+    {
+      "name": "PAUTBPCB",
+      "path": "app/app-authorization-ims-db2-mq/cpy/PAUTBPCB.CPY",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 3
+    },
+    {
+      "name": "COPAU00",
+      "path": "app/app-authorization-ims-db2-mq/cpy-bms/COPAU00.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 1
+    },
+    {
+      "name": "COPAU01",
+      "path": "app/app-authorization-ims-db2-mq/cpy-bms/COPAU01.cpy",
+      "moduleId": "ext-auth-ims-db2-mq",
+      "fanIn": 1
+    },
+    {
+      "name": "CSDB2RPY",
+      "path": "app/app-transaction-type-db2/cpy/CSDB2RPY.cpy",
+      "moduleId": "ext-trntype-db2",
+      "fanIn": 0
+    },
+    {
+      "name": "CSDB2RWY",
+      "path": "app/app-transaction-type-db2/cpy/CSDB2RWY.cpy",
+      "moduleId": "ext-trntype-db2",
+      "fanIn": 0
+    },
+    {
+      "name": "COTRTLI",
+      "path": "app/app-transaction-type-db2/cpy-bms/COTRTLI.cpy",
+      "moduleId": "ext-trntype-db2",
+      "fanIn": 0
+    },
+    {
+      "name": "COTRTUP",
+      "path": "app/app-transaction-type-db2/cpy-bms/COTRTUP.cpy",
+      "moduleId": "ext-trntype-db2",
+      "fanIn": 0
+    },
+    {
+      "name": "COADM02Y",
+      "path": "app/cpy/COADM02Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "COCOM01Y",
+      "path": "app/cpy/COCOM01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 19
+    },
+    {
+      "name": "CODATECN",
+      "path": "app/cpy/CODATECN.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "COMEN02Y",
+      "path": "app/cpy/COMEN02Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "COSTM01",
+      "path": "app/cpy/COSTM01.CPY",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "COTTL01Y",
+      "path": "app/cpy/COTTL01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 19
+    },
+    {
+      "name": "CSDAT01Y",
+      "path": "app/cpy/CSDAT01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 19
+    },
+    {
+      "name": "CSLKPCDY",
+      "path": "app/cpy/CSLKPCDY.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "CSMSG01Y",
+      "path": "app/cpy/CSMSG01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 19
+    },
+    {
+      "name": "CSMSG02Y",
+      "path": "app/cpy/CSMSG02Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 6
+    },
+    {
+      "name": "CSSETATY",
+      "path": "app/cpy/CSSETATY.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "CSSTRPFY",
+      "path": "app/cpy/CSSTRPFY.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 0
+    },
+    {
+      "name": "CSUSR01Y",
+      "path": "app/cpy/CSUSR01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 12
+    },
+    {
+      "name": "CSUTLDPY",
+      "path": "app/cpy/CSUTLDPY.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "CSUTLDWY",
+      "path": "app/cpy/CSUTLDWY.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 0
+    },
+    {
+      "name": "CUSTREC",
+      "path": "app/cpy/CUSTREC.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "CVACT01Y",
+      "path": "app/cpy/CVACT01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 14
+    },
+    {
+      "name": "CVACT02Y",
+      "path": "app/cpy/CVACT02Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 9
+    },
+    {
+      "name": "CVACT03Y",
+      "path": "app/cpy/CVACT03Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 14
+    },
+    {
+      "name": "CVCRD01Y",
+      "path": "app/cpy/CVCRD01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 5
+    },
+    {
+      "name": "CVCUS01Y",
+      "path": "app/cpy/CVCUS01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 10
+    },
+    {
+      "name": "CVEXPORT",
+      "path": "app/cpy/CVEXPORT.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 2
+    },
+    {
+      "name": "CVTRA01Y",
+      "path": "app/cpy/CVTRA01Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 2
+    },
+    {
+      "name": "CVTRA02Y",
+      "path": "app/cpy/CVTRA02Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "CVTRA03Y",
+      "path": "app/cpy/CVTRA03Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "CVTRA04Y",
+      "path": "app/cpy/CVTRA04Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "CVTRA05Y",
+      "path": "app/cpy/CVTRA05Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 11
+    },
+    {
+      "name": "CVTRA06Y",
+      "path": "app/cpy/CVTRA06Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 2
+    },
+    {
+      "name": "CVTRA07Y",
+      "path": "app/cpy/CVTRA07Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 1
+    },
+    {
+      "name": "UNUSED1Y",
+      "path": "app/cpy/UNUSED1Y.cpy",
+      "moduleId": "base-copybooks",
+      "fanIn": 0
+    },
+    {
+      "name": "COACTUP",
+      "path": "app/cpy-bms/COACTUP.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COACTVW",
+      "path": "app/cpy-bms/COACTVW.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COADM01",
+      "path": "app/cpy-bms/COADM01.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COBIL00",
+      "path": "app/cpy-bms/COBIL00.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COCRDLI",
+      "path": "app/cpy-bms/COCRDLI.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COCRDSL",
+      "path": "app/cpy-bms/COCRDSL.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COCRDUP",
+      "path": "app/cpy-bms/COCRDUP.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COMEN01",
+      "path": "app/cpy-bms/COMEN01.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "CORPT00",
+      "path": "app/cpy-bms/CORPT00.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COSGN00",
+      "path": "app/cpy-bms/COSGN00.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COTRN00",
+      "path": "app/cpy-bms/COTRN00.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COTRN01",
+      "path": "app/cpy-bms/COTRN01.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COTRN02",
+      "path": "app/cpy-bms/COTRN02.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COUSR00",
+      "path": "app/cpy-bms/COUSR00.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COUSR01",
+      "path": "app/cpy-bms/COUSR01.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COUSR02",
+      "path": "app/cpy-bms/COUSR02.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    },
+    {
+      "name": "COUSR03",
+      "path": "app/cpy-bms/COUSR03.CPY",
+      "moduleId": "base-bms",
+      "fanIn": 1
+    }
+  ],
+  "systemDependencies": [
+    {
+      "id": "system:cics-bms",
+      "consumedBy": [
+        "base-online",
+        "ext-trntype-db2",
+        "ext-auth-ims-db2-mq"
+      ]
+    },
+    {
+      "id": "system:ibm-mq",
+      "consumedBy": [
+        "ext-vsam-mq",
+        "ext-auth-ims-db2-mq"
+      ]
+    },
+    {
+      "id": "system:ims-dli",
+      "consumedBy": [
+        "ext-auth-ims-db2-mq"
+      ]
+    },
+    {
+      "id": "system:db2",
+      "consumedBy": [
+        "ext-trntype-db2",
+        "ext-auth-ims-db2-mq"
+      ]
+    },
+    {
+      "id": "system:lang-runtime",
+      "consumedBy": [
+        "base-batch"
+      ]
+    },
+    {
+      "id": "system:zos-util",
+      "consumedBy": [
+        "base-jcl"
+      ]
+    }
+  ]
+}
