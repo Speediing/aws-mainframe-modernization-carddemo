@@ -22,7 +22,7 @@ Recommended migration sequencing: **data copybooks → batch utilities → MQ in
 |---|---|---:|---|
 | COBOL (`.cbl`, `.CBL`) | `app/cbl/`, `app/app-*/cbl/` | 44 | Online CICS and batch business logic |
 | COBOL copybooks (`.cpy`, `.CPY`) | `app/cpy/`, `app/cpy-bms/`, `app/app-*/cpy/` | 62 | Record layouts, commareas, BMS maps |
-| BMS maps (`.bms`) | `app/bms/`, `app/app-*/bms/` | 23 | 3270 terminal screen definitions |
+| BMS maps (`.bms`) | `app/bms/`, `app/app-*/bms/` | 21 | 3270 terminal screen definitions (excludes generated `cpy-bms/*.CPY`) |
 | JCL (`.jcl`, `.JCL`) | `app/jcl/`, `app/app-*/jcl/`, `samples/jcl/` | 55 | Batch jobs, dataset setup, utilities |
 | Assembler (`.asm`) | `app/asm/` | 2 | Timer and date-format utilities |
 | Assembler macros (`.mac`) | `app/maclib/` | 2 | Macro library for assembler programs |
@@ -47,7 +47,7 @@ No Java, Python application code, Node.js, or modern web frameworks are present.
 | Framework / Runtime | Evidence | Usage |
 |---|---|---|
 | **IBM CICS** | `EXEC CICS` in 25 programs; `app/csd/CARDDEMO.CSD` | Online transactions, BMS maps, VSAM file control |
-| **VSAM (KSDS/AIX)** | CSD `DEFINE FILE` entries; copybooks `CVACT*Y`, `CVTRA*Y`, `CVCUS01Y` | Account, card, customer, transaction, security data |
+| **VSAM (KSDS/AIX)** | CSD `DEFINE FILE` entries; copybooks `CVACT*Y`, `CVTRA*Y`, `CVCUS01Y`; alternate indexes `CARDAIX`, USRSEC AIX | Account, card, customer, transaction, security data; `STARTBR`/`READNEXT`/`ENDBR` browse patterns in `COCRDLIC`, `COUSR00C`, `COTRN00C` |
 | **BMS / 3270** | `app/bms/*.bms`, `app/cpy-bms/*.CPY`, `COPY DFHAID` / `DFHBMSCA` | Terminal UI for 17 base screens |
 | **JCL / z/OS utilities** | `app/jcl/*.jcl` — IDCAMS, SORT, IEBGENER, IEFBR14, SDSF | Dataset creation, batch pipeline, file maintenance |
 | **Language Environment (LE)** | `CALL 'CEE3ABD'`, `CALL "CEEDAYS"` in `CSUTLDTC.cbl` | Abnormal termination, date arithmetic |
@@ -183,6 +183,8 @@ These copybooks appear in 10+ programs and any schema change ripples widely:
 | **Assembler dependencies** | Batch date/wait logic requires asm link | `CBACT01C.cbl` CALL `COBDATFT`; `COBSWAIT.cbl` CALL `MVSWAIT` |
 | **Dead / placeholder programs in CSD** | CSD references programs not in repo (`COCRDSEC`, `COACTDEC`) | `app/csd/CARDDEMO.CSD` lines 211–218 |
 | **Mixed COBOL dialects** | Upper/lowercase extensions; REPLACING COPY in `COACTUPC` | 30 dynamic COPY REPLACING blocks |
+| **VSAM alternate-index browse** | AIX paths differ from base KSDS; browse sessions require STARTBR/READNEXT/ENDBR lifecycle mapping | `CARDAIX` in `COCRDLIC`/`COCRDSLC`/`COCRDUPC`; USRSEC AIX browse in `COUSR00C`; `CXACAIX` for account-key xref lookups |
+| **Copybook field typo** | `ACCT-EXPIRAION-DATE` misspelling propagates to 14 programs via shared copybook | `app/cpy/CVACT01Y.cpy` line 11 — preserve spelling in target schema or coordinate rename |
 
 ### Low
 
@@ -228,6 +230,14 @@ These copybooks appear in 10+ programs and any schema change ripples widely:
 **Scope:** Sign-on (`COSGN00C`) → menus → account/card/transaction screens
 
 **Defer:** `COACTUPC` (4,237 lines) until smaller online programs (`COSGN00C`, `COMEN01C`, `COTRN01C`) are migrated and patterns established.
+
+Suggested decomposition for `COACTUPC`:
+
+| Slice | Paragraph range | ~Lines | Responsibility |
+|---|---|---:|---|
+| BMS presentation | `1100-RECEIVE-MAP`, `3000-SEND-MAP`–`3400-SEND-SCREEN` | ~1,340 | Map receive/send, screen init, attribute setup |
+| Field validation | `1200-EDIT-MAP-INPUTS`–`2000-DECIDE-ACTION` | ~1,215 | Input edits, old/new compare, action routing |
+| VSAM I/O | `9000-READ-ACCT`–`9700-CHECK-CHANGE-IN-REC` | ~585 | Multi-file read (ACCTDAT, CXACAIX, CARDAIX, CUSTDAT), write processing |
 
 ### Phase 4 — Multi-stack extensions
 
