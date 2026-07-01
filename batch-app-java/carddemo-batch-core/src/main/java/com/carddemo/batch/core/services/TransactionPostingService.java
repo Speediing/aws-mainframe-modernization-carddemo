@@ -6,6 +6,7 @@ import com.carddemo.batch.core.models.TransactionPostingResult;
 import com.carddemo.batch.core.models.TransactionRecord;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,13 @@ public class TransactionPostingService {
                 continue;
             }
 
-            account.setCurrentBalance(account.getCurrentBalance().add(transaction.getAmount()));
+            BigDecimal projectedBalance = account.getCurrentBalance().add(transaction.getAmount());
+            if (projectedBalance.compareTo(account.getCreditLimit()) > 0) {
+                rejected.add(transaction);
+                continue;
+            }
+
+            account.setCurrentBalance(projectedBalance);
             posted.add(transaction.withAccountId(crossReference.getAccountId()));
         }
 

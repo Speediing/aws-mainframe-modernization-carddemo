@@ -25,8 +25,7 @@ public class InterestCalculationService {
 
         return balance
                 .multiply(annualRatePercent)
-                .divide(new BigDecimal("100"), 10, RoundingMode.HALF_UP)
-                .divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP);
+                .divide(new BigDecimal("1200"), 2, RoundingMode.HALF_UP);
     }
 
     public List<AccountRecord> applyMonthlyInterest(

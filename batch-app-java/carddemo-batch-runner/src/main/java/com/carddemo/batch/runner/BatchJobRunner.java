@@ -49,6 +49,8 @@ public class BatchJobRunner implements CommandLineRunner {
                 jobName,
                 legacyProgram);
 
+        // TODO: Replace demo switch with Spring Batch Job/Step beans mapped from BatchJobCatalog
+        //       (e.g. post-transactions -> postTransactionsJob, calculate-interest -> calculateInterestJob).
         switch (jobName.toLowerCase()) {
             case "post-transactions" -> runPostTransactionsDemo();
             case "calculate-interest" -> runInterestCalculationDemo();

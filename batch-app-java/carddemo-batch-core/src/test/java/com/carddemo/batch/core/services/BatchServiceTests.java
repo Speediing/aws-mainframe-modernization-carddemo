@@ -31,6 +31,13 @@ class InterestCalculationServiceTest {
     }
 
     @Test
+    void calculateMonthlyInterestMatchesCobolCbact04cFormula() {
+        // CBACT04C 1300-COMPUTE-INTEREST: WS-MONTHLY-INT = (TRAN-CAT-BAL * DIS-INT-RATE) / 1200
+        BigDecimal interest = service.calculateMonthlyInterest(new BigDecimal("2500.00"), new BigDecimal("15.50"));
+        assertEquals(new BigDecimal("32.29"), interest);
+    }
+
+    @Test
     void calculateMonthlyInterestRejectsNegativeRate() {
         assertThrows(IllegalArgumentException.class, () ->
                 service.calculateMonthlyInterest(new BigDecimal("100.00"), new BigDecimal("-1.00")));
@@ -103,6 +110,29 @@ class TransactionPostingServiceTest {
 
         assertEquals(0, result.postedTransactions().size());
         assertEquals(1, result.rejectedTransactions().size());
+    }
+
+    @Test
+    void postDailyTransactionsRejectsOverlimitTransaction() {
+        Map<Long, AccountRecord> accounts = new HashMap<>();
+        accounts.put(1L, new AccountRecord(
+                1L,
+                true,
+                new BigDecimal("4999.00"),
+                new BigDecimal("5000.00"),
+                new BigDecimal("1000.00"),
+                "A000000000"));
+
+        Map<String, CardCrossReference> crossReferences = Map.of(
+                "4111111111111111",
+                new CardCrossReference("4111111111111111", 1001L, 1L));
+
+        List<TransactionRecord> transactions = List.of(createTransaction("4111111111111111", new BigDecimal("2.00")));
+        TransactionPostingResult result = service.postDailyTransactions(transactions, crossReferences, accounts);
+
+        assertEquals(0, result.postedTransactions().size());
+        assertEquals(1, result.rejectedTransactions().size());
+        assertEquals(new BigDecimal("4999.00"), accounts.get(1L).getCurrentBalance());
     }
 
     @Test
