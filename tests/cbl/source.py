@@ -3,10 +3,17 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-CBL_DIR = Path(__file__).resolve().parents[2] / "app" / "cbl"
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+CBL_DIRS = (
+    _REPO_ROOT / "app" / "cbl",
+    _REPO_ROOT / "app" / "app-authorization-ims-db2-mq" / "cbl",
+    _REPO_ROOT / "app" / "app-vsam-mq" / "cbl",
+)
+CBL_DIR = CBL_DIRS[0]
 
 DIVISION_NAMES = (
     "IDENTIFICATION DIVISION",
@@ -74,8 +81,11 @@ class CblProgram:
         return self.path.name
 
 
-def discover_cbl_programs(cbl_dir: Path = CBL_DIR) -> list[Path]:
-    return sorted(path for path in cbl_dir.iterdir() if path.is_file())
+def discover_cbl_programs(cbl_dirs: Iterable[Path] = CBL_DIRS) -> list[Path]:
+    programs: list[Path] = []
+    for cbl_dir in cbl_dirs:
+        programs.extend(sorted(path for path in cbl_dir.iterdir() if path.is_file()))
+    return sorted(programs, key=lambda path: path.name)
 
 
 def cobol_content(line: str) -> str:

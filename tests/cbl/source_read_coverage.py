@@ -1,20 +1,21 @@
-"""Line coverage tracking for COBOL characterization tests."""
+"""Source read coverage tracking for COBOL characterization reach tests."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import Path
 
-from tests.cbl.source import CBL_DIR, CblProgram, discover_cbl_programs, load_program
+from tests.cbl.source import CBL_DIRS, CblProgram, discover_cbl_programs, load_program
 
 
 @dataclass
-class CoverageTracker:
+class SourceReadCoverageTracker:
+    """Tracks which coverable source lines characterization tests have read."""
+
     covered: dict[str, set[int]] = field(default_factory=dict)
     programs: dict[str, CblProgram] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        for path in discover_cbl_programs(CBL_DIR):
+        for path in discover_cbl_programs(CBL_DIRS):
             program = load_program(path)
             self.programs[program.path.name] = program
             self.covered.setdefault(program.path.name, set())
@@ -53,18 +54,22 @@ class CoverageTracker:
             )
             total_coverable += coverable_count
             total_covered += covered_count
-            ratio = covered_count / coverable_count if coverable_count else 1.0
+            characterization_reach = (
+                covered_count / coverable_count if coverable_count else 1.0
+            )
             per_file[name] = {
                 "coverable": coverable_count,
                 "covered": covered_count,
-                "ratio": ratio,
+                "characterization_reach": characterization_reach,
             }
 
-        overall_ratio = total_covered / total_coverable if total_coverable else 1.0
+        overall_characterization_reach = (
+            total_covered / total_coverable if total_coverable else 1.0
+        )
         return {
             "total_coverable": total_coverable,
             "total_covered": total_covered,
-            "overall_ratio": overall_ratio,
+            "overall_characterization_reach": overall_characterization_reach,
             "per_file": per_file,
         }
 

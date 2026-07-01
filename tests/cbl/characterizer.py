@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from tests.cbl.coverage import CoverageTracker
+from tests.cbl.source_read_coverage import SourceReadCoverageTracker
 from tests.cbl.source import CblProgram, load_program
 
 
@@ -33,7 +33,9 @@ def expected_program_id(path: Path) -> str:
     return stem
 
 
-def characterize_program(path: Path, tracker: CoverageTracker) -> ProgramCharacterization:
+def characterize_program(
+    path: Path, tracker: SourceReadCoverageTracker
+) -> ProgramCharacterization:
     program = load_program(path)
     tracker.programs[program.name] = program
     tracker.covered.setdefault(program.name, set())
@@ -69,21 +71,21 @@ def characterize_program(path: Path, tracker: CoverageTracker) -> ProgramCharact
     return characterization
 
 
-def _cover_identification(program: CblProgram, tracker: CoverageTracker) -> None:
+def _cover_identification(program: CblProgram, tracker: SourceReadCoverageTracker) -> None:
     bounds = program.divisions.get("IDENTIFICATION DIVISION")
     if not bounds:
         return
     tracker.cover_division(program, "IDENTIFICATION DIVISION")
 
 
-def _cover_environment(program: CblProgram, tracker: CoverageTracker) -> None:
+def _cover_environment(program: CblProgram, tracker: SourceReadCoverageTracker) -> None:
     bounds = program.divisions.get("ENVIRONMENT DIVISION")
     if not bounds:
         return
     tracker.cover_division(program, "ENVIRONMENT DIVISION")
 
 
-def _cover_data_division(program: CblProgram, tracker: CoverageTracker) -> None:
+def _cover_data_division(program: CblProgram, tracker: SourceReadCoverageTracker) -> None:
     bounds = program.divisions.get("DATA DIVISION")
     if not bounds:
         return
@@ -106,7 +108,9 @@ def _cover_data_division(program: CblProgram, tracker: CoverageTracker) -> None:
         tracker.cover_program_lines(program, current_group)
 
 
-def _cover_procedure_division(program: CblProgram, tracker: CoverageTracker) -> None:
+def _cover_procedure_division(
+    program: CblProgram, tracker: SourceReadCoverageTracker
+) -> None:
     bounds = program.divisions.get("PROCEDURE DIVISION")
     if bounds:
         start, end = bounds

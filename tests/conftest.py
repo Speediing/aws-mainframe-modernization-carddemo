@@ -6,20 +6,20 @@ from pathlib import Path
 
 import pytest
 
-from tests.cbl.coverage import CoverageTracker
-from tests.cbl.source import CBL_DIR, discover_cbl_programs
+from tests.cbl.source import CBL_DIRS, discover_cbl_programs
+from tests.cbl.source_read_coverage import SourceReadCoverageTracker
 
 
 @pytest.fixture(scope="session")
-def cbl_dir() -> Path:
-    return CBL_DIR
+def cbl_dirs() -> tuple[Path, ...]:
+    return CBL_DIRS
 
 
 @pytest.fixture(scope="session")
-def cbl_program_paths(cbl_dir: Path) -> list[Path]:
-    return discover_cbl_programs(cbl_dir)
+def cbl_program_paths(cbl_dirs: tuple[Path, ...]) -> list[Path]:
+    return discover_cbl_programs(cbl_dirs)
 
 
 @pytest.fixture(scope="session")
-def coverage_tracker() -> CoverageTracker:
-    return CoverageTracker()
+def source_read_coverage_tracker() -> SourceReadCoverageTracker:
+    return SourceReadCoverageTracker()

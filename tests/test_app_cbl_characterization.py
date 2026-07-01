@@ -1,4 +1,4 @@
-"""Characterization tests for CardDemo COBOL programs in app/cbl/."""
+"""Characterization tests for CardDemo COBOL programs across app CBL trees."""
 
 from __future__ import annotations
 
@@ -8,19 +8,21 @@ from pathlib import Path
 import pytest
 
 from tests.cbl.characterizer import characterize_program, expected_program_id
-from tests.cbl.coverage import CoverageTracker
-from tests.cbl.source import CBL_DIR, discover_cbl_programs, load_program
+from tests.cbl.source import CBL_DIRS, discover_cbl_programs, load_program
+from tests.cbl.source_read_coverage import SourceReadCoverageTracker
 
 PROGRAM_IDS = {
-    path.name: expected_program_id(path) for path in discover_cbl_programs(CBL_DIR)
+    path.name: expected_program_id(path) for path in discover_cbl_programs(CBL_DIRS)
 }
 
 
 @pytest.fixture(scope="session")
-def characterized_programs(coverage_tracker: CoverageTracker) -> dict[str, object]:
+def characterized_programs(
+    source_read_coverage_tracker: SourceReadCoverageTracker,
+) -> dict[str, object]:
     programs: dict[str, object] = {}
-    for path in discover_cbl_programs(CBL_DIR):
-        programs[path.name] = characterize_program(path, coverage_tracker)
+    for path in discover_cbl_programs(CBL_DIRS):
+        programs[path.name] = characterize_program(path, source_read_coverage_tracker)
     return programs
 
 
