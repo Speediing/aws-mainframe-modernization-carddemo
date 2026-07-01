@@ -1,13 +1,13 @@
 # CardDemo Modernization Risk Report
 
-Generated: 2026-07-01T02:43:09.751Z
+Generated: 2026-07-01T04:23:09.736Z
 
 ## Overall Assessment
 
 | Metric | Value |
 | --- | --- |
-| **Risk score** | **23/100** |
-| **Severity** | **Low** |
+| **Risk score** | **24/100** |
+| **Severity** | **High** |
 | Application root | `app/` |
 
 ## Manifest Rules
@@ -114,8 +114,8 @@ Programs recommended for an initial modernization pilot due to lower scores and 
 | COPAUS0C | ims-db2-mq | 38 | Medium | optional-module:ims-db2-mq, medium-program, moderate-copybook-coupling, ims-dli |
 | COPAUS1C | ims-db2-mq | 30 | Medium | optional-module:ims-db2-mq, moderate-copybook-coupling, ims-dli |
 | COCRDUPC | base | 30 | Medium | medium-program, moderate-copybook-coupling, many-validation-flags, heavy-go-to |
-| CBPAUP0C | ims-db2-mq | 24 | Low | optional-module:ims-db2-mq, ims-dli |
-| COCRDLIC | base | 24 | Low | medium-program, moderate-copybook-coupling, heavy-go-to |
+| DBUNLDGS | ims-db2-mq | 28 | Low | optional-module:ims-db2-mq, moderate-call-coupling, ims-dli |
+| PAUDBLOD | ims-db2-mq | 28 | Low | optional-module:ims-db2-mq, moderate-call-coupling, ims-dli |
 
 ## Program Detail
 
@@ -129,19 +129,19 @@ Programs recommended for an initial modernization pilot due to lower scores and 
 | COPAUS0C | 1033 | 14 | 0 | 10 | 0 | 6 | 0 | 38 |
 | COPAUS1C | 605 | 10 | 0 | 8 | 0 | 7 | 0 | 30 |
 | COCRDUPC | 1561 | 12 | 0 | 12 | 0 | 0 | 0 | 30 |
+| DBUNLDGS | 367 | 6 | 6 | 0 | 0 | 4 | 0 | 28 |
+| PAUDBLOD | 370 | 4 | 5 | 0 | 0 | 3 | 0 | 28 |
+| PAUDBUNL | 318 | 4 | 4 | 0 | 0 | 2 | 0 | 28 |
 | CBPAUP0C | 387 | 2 | 0 | 0 | 0 | 5 | 0 | 24 |
 | COCRDLIC | 1460 | 10 | 0 | 18 | 0 | 0 | 0 | 24 |
 | COPAUS2C | 245 | 1 | 0 | 3 | 4 | 0 | 0 | 22 |
 | COBTUPDT | 238 | 0 | 0 | 0 | 5 | 0 | 0 | 22 |
-| DBUNLDGS | 367 | 6 | 6 | 0 | 0 | 0 | 0 | 16 |
-| PAUDBLOD | 370 | 4 | 5 | 0 | 0 | 0 | 0 | 16 |
-| PAUDBUNL | 318 | 4 | 4 | 0 | 0 | 0 | 0 | 16 |
 | COACCT01 | 621 | 1 | 9 | 4 | 0 | 0 | 0 | 16 |
 | CODATE01 | 525 | 0 | 9 | 5 | 0 | 0 | 0 | 16 |
+| COBIL00C | 573 | 10 | 0 | 13 | 0 | 0 | 0 | 14 |
+| COTRN02C | 784 | 10 | 2 | 11 | 0 | 0 | 0 | 14 |
 | COACTVWC | 942 | 14 | 0 | 15 | 0 | 0 | 0 | 11 |
 | COCRDSLC | 888 | 12 | 0 | 14 | 0 | 0 | 0 | 11 |
-| COBIL00C | 573 | 10 | 0 | 13 | 0 | 0 | 0 | 6 |
-| COTRN02C | 784 | 10 | 2 | 11 | 0 | 0 | 0 | 6 |
 | CBSTM03B | 231 | 0 | 0 | 0 | 0 | 0 | 0 | 5 |
 | CBACT01C | 431 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |
 | CBACT02C | 179 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -164,7 +164,7 @@ Programs recommended for an initial modernization pilot due to lower scores and 
 | COUSR01C | 300 | 8 | 0 | 5 | 0 | 0 | 0 | 0 |
 | COUSR02C | 415 | 8 | 0 | 6 | 0 | 0 | 0 | 0 |
 | COUSR03C | 360 | 8 | 0 | 6 | 0 | 0 | 0 | 0 |
-| CSUTLDTC | 158 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| CSUTLDTC | 158 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
 
 ---
 

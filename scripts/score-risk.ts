@@ -130,6 +130,15 @@ const BATCH_PROGRAMS = new Set([
   "PAUDBUNL",
 ]);
 
+const POSTING_PROGRAMS = new Set([
+  "COTRN02C", "COBIL00C", "COCRDUPC", "COACTUPC",
+]);
+
+const CALL_PATTERN = /CALL\s+(?:'([^']+)'|"([^"]+)")/gi;
+const IMS_DLI_PATTERN = /(?:EXEC DLI|CALL\s+(?:'CBLTDLI'|"CBLTDLI"))/gi;
+const CICS_VSAM_WRITE_PATTERN = /EXEC CICS\s+(?:WRITE|REWRITE)\s/gi;
+const CICS_SYNCPOINT_PATTERN = /EXEC CICS[\s\S]*?\bSYNCPOINT\b/gi;
+
 function walkFiles(dir: string, extensions: string[]): string[] {
   const results: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -201,7 +210,17 @@ function countMatches(content: string, pattern: RegExp): number {
 }
 
 function extractUnique(content: string, pattern: RegExp): string[] {
-  return [...new Set([...content.matchAll(pattern)].map((m) => m[1].toUpperCase()))];
+  return [
+    ...new Set(
+      [...content.matchAll(pattern)]
+        .map((m) => (m[1] ?? m[2] ?? "").toUpperCase())
+        .filter(Boolean),
+    ),
+  ];
+}
+
+function extractCallTargets(content: string): string[] {
+  return extractUnique(content, CALL_PATTERN);
 }
 
 function analyzeProgram(
@@ -226,12 +245,12 @@ function analyzeProgram(
   const coupling: CouplingMetrics = {
     copyCount: countMatches(content, /^\s*COPY\s+([A-Z0-9-]+)/gim),
     uniqueCopybooks: extractUnique(content, /^\s*COPY\s+([A-Z0-9-]+)/gim),
-    callCount: countMatches(content, /CALL\s+'([^']+)'/gi),
-    callTargets: extractUnique(content, /CALL\s+'([^']+)'/gi),
+    callCount: countMatches(content, CALL_PATTERN),
+    callTargets: extractCallTargets(content),
     cicsFileRefs: extractUnique(content, /EXEC CICS\s+(?:READ|WRITE|REWRITE|DELETE|STARTBR|READNEXT|READPREV|ENDBR|UNLOCK)\s+[\s\S]*?\(\s*([A-Z0-9-]+)\s*\)/gi),
     execCics: countMatches(content, /EXEC CICS/gi),
     execSql: countMatches(content, /EXEC SQL/gi),
-    execDli: countMatches(content, /EXEC DLI/gi),
+    execDli: countMatches(content, IMS_DLI_PATTERN),
     execMq: countMatches(content, /EXEC\s+MQ/gi),
   };
 
@@ -299,6 +318,14 @@ function analyzeProgram(
   if (coupling.execMq > 0) {
     score += 8;
     factors.push("mq-integration");
+  }
+  if (
+    POSTING_PROGRAMS.has(name) &&
+    countMatches(content, CICS_VSAM_WRITE_PATTERN) > 0 &&
+    countMatches(content, CICS_SYNCPOINT_PATTERN) === 0
+  ) {
+    score += 8;
+    factors.push("vsam-write-without-syncpoint");
   }
   if (coupling.execCics > 0 && coupling.execSql > 0 && coupling.execDli > 0) {
     score += 15;
@@ -485,11 +512,27 @@ function selectPilotCandidates(programs: ProgramScore[]): PilotCandidate[] {
   });
 }
 
-function computeOverallSeverity(score: number): Severity {
-  if (score >= 70) return "Critical";
-  if (score >= 50) return "High";
-  if (score >= 30) return "Medium";
-  return "Low";
+const SEVERITY_RANK: Record<Severity, number> = {
+  Low: 0,
+  Medium: 1,
+  High: 2,
+  Critical: 3,
+};
+
+function computeOverallSeverity(score: number, blockers: Blocker[]): Severity {
+  let severity: Severity = "Low";
+  if (score >= 70) severity = "Critical";
+  else if (score >= 50) severity = "High";
+  else if (score >= 30) severity = "Medium";
+
+  if (
+    blockers.some((blocker) => blocker.severity === "Critical") &&
+    SEVERITY_RANK[severity] < SEVERITY_RANK.High
+  ) {
+    severity = "High";
+  }
+
+  return severity;
 }
 
 function buildReport(appRoot: string): RiskReport {
@@ -541,7 +584,7 @@ function buildReport(appRoot: string): RiskReport {
     generatedAt: new Date().toISOString(),
     appRoot: relative(REPO_ROOT, appRoot),
     overallScore: Math.min(100, overallScore),
-    severity: computeOverallSeverity(Math.min(100, overallScore)),
+    severity: computeOverallSeverity(Math.min(100, overallScore), blockers),
     manifestSummary: {
       programs: programScores.length,
       copybooks: copybookFiles.length,
