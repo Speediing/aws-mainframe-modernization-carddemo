@@ -1,8 +1,10 @@
 {
   "version": 1,
   "strategy": "rollback-first",
-  "updated_at": "2026-07-01T03:10:00Z",
+  "stage_resolution": "per-route-overrides-global",
+  "updated_at": "2026-07-01T12:00:00Z",
   "active_stage": 1,
+  "active_stage_semantics": "Global default stage index (0–6) keyed into stages. When stage_resolution is per-route-overrides-global, each route uses route.stage when set; otherwise it inherits active_stage. Effective traffic split (legacy_pct, modern_pct) and shadow flag resolve from stages[effective_stage] — do not duplicate them on routes.",
   "rollback": {
     "stage": 0,
     "description": "Instant rollback: set active_stage to 0; all routes revert to 100% legacy / 0% modern",
@@ -10,6 +12,12 @@
       "legacy": 100,
       "modern": 0
     }
+  },
+  "shadow_comparison": {
+    "divergence_threshold": 0.01,
+    "comparison_strategy": "field-by-field",
+    "shadow_timeout_ms": 60000,
+    "error_budget": 0.001
   },
   "stages": {
     "0": {
@@ -66,10 +74,9 @@
     {
       "id": "batch.posttran",
       "description": "Daily transaction posting — CBTRN02C / POSTTRAN",
-      "wave": 3,
+      "wave": 1,
       "enabled": true,
       "stage": 1,
-      "shadow": true,
       "legacy": {
         "type": "cobol-batch",
         "program": "CBTRN02C",
@@ -81,17 +88,8 @@
         "service": "DailyTransactionPostingService",
         "depends_on_pr": 8
       },
-      "traffic": {
-        "legacy": 100,
-        "modern": 0
-      },
       "rollback": {
-        "stage": 0,
-        "shadow": false,
-        "traffic": {
-          "legacy": 100,
-          "modern": 0
-        }
+        "stage": 0
       }
     },
     {
@@ -109,16 +107,8 @@
         "type": "pending",
         "note": "No modern target yet — enable after pilot port lands"
       },
-      "traffic": {
-        "legacy": 100,
-        "modern": 0
-      },
       "rollback": {
-        "stage": 0,
-        "traffic": {
-          "legacy": 100,
-          "modern": 0
-        }
+        "stage": 0
       }
     },
     {
@@ -136,16 +126,8 @@
         "type": "pending",
         "note": "No modern target yet — enable after pilot port lands"
       },
-      "traffic": {
-        "legacy": 100,
-        "modern": 0
-      },
       "rollback": {
-        "stage": 0,
-        "traffic": {
-          "legacy": 100,
-          "modern": 0
-        }
+        "stage": 0
       }
     }
   ]
