@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "strategy": "rollback-first",
+  "stage_resolution": "per-route-overrides-global",
+  "updated_at": "2026-07-01T12:00:00Z",
+  "active_stage": 1,
+  "active_stage_semantics": "Global default stage index (0–6) keyed into stages. When stage_resolution is per-route-overrides-global, each route uses route.stage when set; otherwise it inherits active_stage. Effective traffic split (legacy_pct, modern_pct) and shadow flag resolve from stages[effective_stage] — do not duplicate them on routes.",
+  "rollback": {
+    "stage": 0,
+    "description": "Instant rollback: set active_stage to 0; all routes revert to 100% legacy / 0% modern",
+    "traffic": {
+      "legacy": 100,
+      "modern": 0
+    }
+  },
+  "shadow_comparison": {
+    "divergence_threshold": 0.01,
+    "comparison_strategy": "field-by-field",
+    "shadow_timeout_ms": 60000,
+    "error_budget": 0.001
+  },
+  "stages": {
+    "0": {
+      "label": "baseline",
+      "legacy_pct": 100,
+      "modern_pct": 0,
+      "shadow": false,
+      "description": "Safe default — all production traffic on legacy"
+    },
+    "1": {
+      "label": "shadow",
+      "legacy_pct": 100,
+      "modern_pct": 0,
+      "shadow": true,
+      "description": "Mirror requests to modern path; compare outputs without serving users"
+    },
+    "2": {
+      "label": "canary-1pct",
+      "legacy_pct": 99,
+      "modern_pct": 1,
+      "shadow": false,
+      "description": "1% canary on modern; rollback to stage 0 on regression"
+    },
+    "3": {
+      "label": "canary-5pct",
+      "legacy_pct": 95,
+      "modern_pct": 5,
+      "shadow": false,
+      "description": "5% canary on modern"
+    },
+    "4": {
+      "label": "canary-25pct",
+      "legacy_pct": 75,
+      "modern_pct": 25,
+      "shadow": false,
+      "description": "25% canary on modern"
+    },
+    "5": {
+      "label": "canary-50pct",
+      "legacy_pct": 50,
+      "modern_pct": 50,
+      "shadow": false,
+      "description": "50% canary on modern"
+    },
+    "6": {
+      "label": "cutover",
+      "legacy_pct": 0,
+      "modern_pct": 100,
+      "shadow": false,
+      "description": "Full cutover — legacy path retained for emergency rollback only"
+    }
+  },
+  "routes": [
+    {
+      "id": "batch.posttran",
+      "description": "Daily transaction posting — CBTRN02C / POSTTRAN",
+      "wave": 1,
+      "enabled": true,
+      "stage": 1,
+      "legacy": {
+        "type": "cobol-batch",
+        "program": "CBTRN02C",
+        "job": "POSTTRAN"
+      },
+      "modern": {
+        "type": "java-service",
+        "artifact": "modernization/carddemo-java",
+        "service": "DailyTransactionPostingService",
+        "depends_on_pr": 8
+      },
+      "rollback": {
+        "stage": 0
+      }
+    },
+    {
+      "id": "mq.cdrd",
+      "description": "System date inquiry — CODATE01 / CDRD",
+      "wave": 2,
+      "enabled": false,
+      "stage": 0,
+      "legacy": {
+        "type": "cics-mq",
+        "program": "CODATE01",
+        "transaction": "CDRD"
+      },
+      "modern": {
+        "type": "pending",
+        "note": "No modern target yet — enable after pilot port lands"
+      },
+      "rollback": {
+        "stage": 0
+      }
+    },
+    {
+      "id": "mq.cdra",
+      "description": "Account details inquiry — COACCT01 / CDRA",
+      "wave": 2,
+      "enabled": false,
+      "stage": 0,
+      "legacy": {
+        "type": "cics-mq",
+        "program": "COACCT01",
+        "transaction": "CDRA"
+      },
+      "modern": {
+        "type": "pending",
+        "note": "No modern target yet — enable after pilot port lands"
+      },
+      "rollback": {
+        "stage": 0
+      }
+    }
+  ]
+}
